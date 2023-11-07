@@ -1,4 +1,4 @@
-The Aim of the implimentation is to enable smart case generation from Email in the Salesforce org. The implimentation uses Pulze.ai that provides efficient evaluation layer on popular LLMs.
+The aim of the implimentation is to enable 'Smart Case Generation from Email' in the Salesforce org. The implimentation uses Pulze.ai that provides efficient evaluation layer on popular LLMs.
 
 Here is how to use the functionality.
 
