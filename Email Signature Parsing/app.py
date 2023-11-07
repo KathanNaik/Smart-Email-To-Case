@@ -75,7 +75,7 @@ def login():
         if(access_password == "Aethereus@123"):
              msg = Message( 
                 'Email-Conformation', 
-                sender ='kathan.naik@aethereus.com', 
+                sender = email_address, 
                 recipients = [user_address] 
                ) 
             msg.body = 'A case has been raised based on your email and our team will be contacting you soon. Thank you for reaching out!'
