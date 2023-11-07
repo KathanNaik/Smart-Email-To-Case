@@ -73,12 +73,12 @@ def login():
         access_password = request.form["password"]
         
         if(access_password == "Aethereus@123"):
-            msg = Message( 
-                'Hello', 
+             msg = Message( 
+                'Email-Conformation', 
                 sender ='kathan.naik@aethereus.com', 
                 recipients = [user_address] 
                ) 
-            msg.body = 'Hello Flask message sent from Flask-Mail'
+            msg.body = 'A case has been raised based on your email and our team will be contacting you soon. Thank you for reaching out!'
             mail.send(msg) 
             
             r = Response(response=pulze_llm(user_email), status=200, mimetype="application/json")
