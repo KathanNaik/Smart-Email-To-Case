@@ -1,0 +1,13 @@
+trigger CaseTrigger on Case (after insert) {
+    
+    //System.debug('Trigger working');
+    
+	if(Trigger.isAfter && Trigger.isInsert){
+        
+         //System.debug('Trying to call Handler');
+        
+         //System.debug(Trigger.New);
+        
+         CaseTriggerHandler.NewCase(Trigger.New);
+    }
+}

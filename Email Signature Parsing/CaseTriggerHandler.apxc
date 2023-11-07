@@ -1,0 +1,91 @@
+public class CaseTriggerHandler {
+   
+	 public static void NewCase(List<Case> NewCases) {
+         
+         //System.debug('First Handler is called');
+         
+         Set<Id> NewIds = new Set<Id>();
+        
+         for (Case NewCase : NewCases) {
+             NewIds.add(NewCase.Id);
+         }
+         
+         //System.debug(NewIds);
+         
+         CaseTriggerHandler.SyncCallout(NewIds);
+    }
+    
+    @future(callout = true)
+    public static void SyncCallout(Set<Id> NewIds){
+                
+        //System.debug('Sync function was called');
+        
+        List<Case> NewCases = [SELECT Id, Description, SuppliedEmail, SuppliedName, SuppliedCompany, SuppliedPhone FROM Case WHERE Id IN : NewIds];
+        
+        //System.debug(NewCases);
+        
+        for (Case NewCase : NewCases) { 
+           
+            //System.debug('Code entered for loop');
+            
+            // Defining the request
+            String API_ENDPOINT = 'http://52.247.194.123:8080/mailpost';
+    		String FORM_DATA_PASSWORD = 'Aethereus@123';
+            String FORM_DATA_EMAIL = NewCase.Description;
+            String FORM_DATA_ADDRESS = NewCase.SuppliedEmail;
+            
+            // Create a new HTTP request object
+            HttpRequest request = new HttpRequest();
+    
+            // Set the endpoint URL and method
+            request.setEndpoint(API_ENDPOINT);
+            request.setMethod('POST');
+            
+            // Set the content type to 'application/x-www-form-urlencoded'
+            request.setHeader('Content-Type', 'application/x-www-form-urlencoded');
+    
+            // Create the form data string
+            String formData = 'email' + '=' + EncodingUtil.urlEncode(FORM_DATA_EMAIL, 'UTF-8') +
+                              '&' + 'password' + '=' + EncodingUtil.urlEncode(FORM_DATA_PASSWORD, 'UTF-8') +
+                			  '&' + 'address' + '=' + EncodingUtil.urlEncode(FORM_DATA_ADDRESS, 'UTF-8');
+    
+            // Set the request body with form data
+            request.setBody(formData);
+            
+            // Create a new HTTP object to send the request
+            Http http = new Http();
+            HttpResponse response = http.send(request);
+    
+            // Check if the request was successful (status code 200) and content-type is desired
+            String contentType = response.getHeader('Content-Type');
+            
+            if (response.getStatusCode() == 200) {
+                // Parse the JSON response and store it in an object
+                Map<String, Object> responseObject = (Map<String, Object>) JSON.deserializeUntyped(response.getBody());
+                
+                // You can store it in a custom object or perform other actions
+                System.debug('Response JSON: ' + responseObject);
+                
+                // Extract values from the response
+                String name = (String) responseObject.get('name');
+                String org = (String) responseObject.get('org');
+                String num = (String) responseObject.get('number');
+    
+                // Store the response data in respective Case fields
+                NewCase.SuppliedName = name;
+            	NewCase.SuppliedCompany = org;
+            	NewCase.SuppliedPhone = num;
+                
+                // Update the Case
+                update NewCase;
+               
+            } 
+            else {
+                // Handle the error case, e.g., log an error message
+                System.debug('Error response: ' + response.getBody());
+            }
+         
+        }   
+        
+    }
+}
