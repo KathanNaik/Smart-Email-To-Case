@@ -1,0 +1,77 @@
+public class ProductParsing {
+    
+    @future(callout = true)
+    public static void ProductfromEmail(Set<Id> CaseIds){
+        
+        for (Id CaseId : CaseIds) {
+        
+            Case NewCase = [SELECT Id, Description, Product__c, ProductId FROM Case WHERE Id = :CaseId];
+            
+            //Gathering the Products list in the string format
+            List<Product2> ProductList = [SELECT Id, Name, Description FROM Product2];
+            
+            String Products;
+            
+            for (Product2 Product : ProductList) {
+                Products = Products + Product.Name + '=' + Product.Description + '||';
+            } 
+            
+            //API Configuration
+            String API_ENDPOINT = 'http://52.247.194.123:8080/product';
+            String FORM_DATA_PASSWORD = 'Aethereus@123';
+            String FORM_DATA_EMAIL = NewCase.Description;
+            
+            // Create a new HTTP request object
+            HttpRequest request = new HttpRequest();
+        
+            // Set the endpoint URL and method
+            request.setEndpoint(API_ENDPOINT);
+            request.setMethod('POST');
+                
+            // Set the content type to 'application/x-www-form-urlencoded'
+            request.setHeader('Content-Type', 'application/x-www-form-urlencoded');
+        
+            // Create the form data string
+            String formData = 'email' + '=' + EncodingUtil.urlEncode(FORM_DATA_EMAIL, 'UTF-8') +
+                              '&' + 'password' + '=' + EncodingUtil.urlEncode(FORM_DATA_PASSWORD, 'UTF-8') +
+                              '&' + 'products' + '=' + EncodingUtil.urlEncode(Products, 'UTF-8');
+            
+            // Set the request body with form data
+            request.setBody(formData);
+                
+            // Create a new HTTP object to send the request
+            Http http = new Http();
+            HttpResponse response = http.send(request);
+        
+            // Check if the request was successful (status code 200) and content-type is desired
+            String contentType = response.getHeader('Content-Type');
+                
+            if (response.getStatusCode() == 200) {
+            // Parse the JSON response and store it in an object
+            Map<String, Object> responseObject = (Map<String, Object>) JSON.deserializeUntyped(response.getBody());
+                   
+            System.debug('Response JSON: ' + responseObject);
+                    
+            // Extract values from the response
+            String product = (String) responseObject.get('product');
+                
+            // Store the response data in respective Case fields
+            NewCase.Product__c = product;
+                
+            Product2 fetchProduct = [SELECT Id FROM Product2 WHERE Name = :product LIMIT 1];
+                
+            NewCase.ProductId = fetchProduct.Id;
+                    
+            // Update the Case
+            update NewCase;
+                   
+            } 
+            else {
+            // Handle the error case, e.g., log an error message
+            System.debug('Error response: ' + response.getBody());
+                
+            }
+            
+        }
+    }
+}

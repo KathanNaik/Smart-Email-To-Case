@@ -1,4 +1,6 @@
 public class CaseTriggerHandler {
+    
+     public static boolean isProductParsing = true;
    
 	 public static void NewCase(List<Case> NewCases) {
          
@@ -13,6 +15,14 @@ public class CaseTriggerHandler {
          //System.debug(NewIds);
          
          CaseTriggerHandler.SyncCallout(NewIds);
+         
+         //ProductParsing
+         if(CaseTriggerHandler.isProductParsing == true) {
+         	ProductParsing.ProductfromEmail(NewIds);
+         }
+                
+         
+    
     }
     
     @future(callout = true)
