@@ -9,6 +9,6 @@ Here is how to use the functionality.
 5) Create Pulze app from the Pulze dashboard and copy the key.
 6) Host the Flask back-end in your preferable VM.
 7) Do not forget to replace the key.txt and email_cred.json file with your own Key and Credentials.
-8) Add your API to the Secure Site settigs of your Salesforce org.
+8) Add your API to the Secure Site settings of your Salesforce org.
 
 Feel free to raise any issue you face in the issues section.
