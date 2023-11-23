@@ -39,7 +39,7 @@ public class CaseTriggerHandler {
             //System.debug('Code entered for loop');
             
             // Defining the request
-            String API_ENDPOINT = 'http://52.247.194.123:8080/mailpost';
+            String API_ENDPOINT = 'YOUR API END POINT';
     		String FORM_DATA_PASSWORD = 'Aethereus@123';
             String FORM_DATA_EMAIL = NewCase.Description;
             String FORM_DATA_ADDRESS = NewCase.SuppliedEmail;
